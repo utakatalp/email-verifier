@@ -1,0 +1,23 @@
+# Go binaries
+/email-verifier
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
+
+# Coverage
+*.out
+
+# Dependency vendor
+/vendor/
+
+# IDE / editor
+.idea/
+.vscode/
+
+# Local environment
+.env

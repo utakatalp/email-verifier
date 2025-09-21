@@ -1,0 +1,7 @@
+CREATE TABLE email_verifications (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  token VARCHAR(255) NOT NULL UNIQUE,
+  expires_at TIMESTAMP NOT NULL,
+  verified BOOLEAN DEFAULT FALSE
+);

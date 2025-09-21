@@ -30,6 +30,7 @@ func SendActivationMail(to, token string) error {
 	message := mail.NewSingleEmail(from, subject, toEmail, plainTextContent, htmlContent)
 	client := sendgrid.NewSendClient(os.Getenv("SENDGRID_API_KEY"))
 	client.Request, _ = sendgrid.SetDataResidency(client.Request, "eu")
+	fmt.Println(message)
 	_, err := client.Send(message)
 	if err != nil {
 		return ErrMailSendFailed

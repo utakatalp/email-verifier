@@ -3,28 +3,35 @@ package services
 import (
 	"fmt"
 	"os"
-	"strconv"
 
-	"gopkg.in/gomail.v2"
+	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 // Gmail SMTP örneği (App Password gerekiyor)
-var (
+/*var (
 	smtpUser    = os.Getenv("SMTP_USER")
 	smtpPass    = os.Getenv("SMTP_PASS")
 	smtpHost    = os.Getenv("SMTP_HOST")
 	smtpPort, _ = strconv.Atoi(os.Getenv("SMTP_PORT"))
 )
+*/
+func SendActivationMail(to, token string) error {
+	from := mail.NewEmail("Email Verifier", os.Getenv("FROM_EMAIL"))
+	subject := "Activate your account"
+	toEmail := mail.NewEmail("", to)
 
-func SendActivationMail(to string, token string) error {
-	m := gomail.NewMessage()
-	m.SetHeader("From", smtpUser)
-	m.SetHeader("To", to)
-	m.SetHeader("Subject", "Activate your account")
+	baseURL := os.Getenv("PUBLIC_DOMAIN")
 
-	link := fmt.Sprintf("http://localhost:8080/activate?token=%s", token)
-	m.SetBody("text/plain", "Click the link to activate your email: "+link)
+	link := fmt.Sprintf("%s/activate?token=%s", baseURL, token)
+	plainTextContent := "Click this link to activate your account: " + link
+	htmlContent := fmt.Sprintf("<p>Click <a href=\"%s\">here</a> to activate your account.</p>", link)
 
-	d := gomail.NewDialer(smtpHost, smtpPort, smtpUser, smtpPass)
-	return d.DialAndSend(m)
+	message := mail.NewSingleEmail(from, subject, toEmail, plainTextContent, htmlContent)
+	client := sendgrid.NewSendClient(os.Getenv("SENDGRID_API_KEY"))
+	_, err := client.Send(message)
+	if err != nil {
+		return ErrMailSendFailed
+	}
+	return nil
 }
